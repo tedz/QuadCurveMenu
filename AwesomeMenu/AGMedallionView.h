@@ -24,8 +24,11 @@
 
 @property (nonatomic) BOOL highlighted;
 
+@property (nonatomic) BOOL addAlphaGradientMask;
+
 @property (nonatomic, strong) UIColor *progressColor;
 @property (nonatomic) CGFloat progress;
+
 
 @end
 

@@ -26,15 +26,16 @@
 #pragma mark - Properties
 
 @synthesize
-    image = _image,
-    highlightedImage = _highlightedImage,
-    borderColor = _borderColor,
-    borderWidth = _borderWidth,
-    shadowColor = _shadowColor,
-    shadowOffset = _shadowOffset,
-    shadowBlur = _shadowBlur;
+image = _image,
+highlightedImage = _highlightedImage,
+borderColor = _borderColor,
+borderWidth = _borderWidth,
+shadowColor = _shadowColor,
+shadowOffset = _shadowOffset,
+shadowBlur = _shadowBlur;
 
 @synthesize highlighted = _highlighted;
+@synthesize addAlphaGradientMask = _addAlphaGradientMask;
 
 @synthesize progressColor = _progressColor;
 @synthesize progress = _progress;
@@ -100,6 +101,15 @@
     }
 }
 
+-(void)setHighlighted:(BOOL)ishighlighted{
+    
+    if (_highlighted != ishighlighted) {
+        _highlighted = ishighlighted;
+        
+        [self setNeedsDisplay];
+    }
+}
+
 #pragma mark - Object Lifecycle
 
 - (void)dealloc {
@@ -108,6 +118,7 @@
 }
 
 - (void)setup {
+    
     alphaGradient = NULL;
     
     self.borderColor = [UIColor whiteColor];
@@ -162,26 +173,26 @@
 - (void)drawRect:(CGRect)rect
 {
     // Image rect
-    CGRect imageRect = CGRectMake((self.borderWidth), 
-                                  (self.borderWidth) , 
-                                  rect.size.width - (self.borderWidth * 2), 
+    CGRect imageRect = CGRectMake((self.borderWidth),
+                                  (self.borderWidth) ,
+                                  rect.size.width - (self.borderWidth * 2),
                                   rect.size.height - (self.borderWidth * 2));
     
     // Start working with the mask
     CGColorSpaceRef maskColorSpaceRef = CGColorSpaceCreateDeviceGray();
     CGContextRef mainMaskContextRef = CGBitmapContextCreate(NULL,
-                                                        rect.size.width, 
-                                                        rect.size.height, 
-                                                        8, 
-                                                        rect.size.width, 
-                                                        maskColorSpaceRef, 
-                                                        0);
+                                                            rect.size.width,
+                                                            rect.size.height,
+                                                            8,
+                                                            rect.size.width,
+                                                            maskColorSpaceRef,
+                                                            0);
     CGContextRef shineMaskContextRef = CGBitmapContextCreate(NULL,
-                                                             rect.size.width, 
-                                                             rect.size.height, 
-                                                             8, 
-                                                             rect.size.width, 
-                                                             maskColorSpaceRef, 
+                                                             rect.size.width,
+                                                             rect.size.height,
+                                                             8,
+                                                             rect.size.width,
+                                                             maskColorSpaceRef,
                                                              0);
     CGColorSpaceRelease(maskColorSpaceRef);
     CGContextSetFillColorWithColor(mainMaskContextRef, [UIColor blackColor].CGColor);
@@ -199,9 +210,9 @@
     CGContextTranslateCTM(shineMaskContextRef, -(rect.size.width / 4), rect.size.height / 4 * 3);
     CGContextRotateCTM(shineMaskContextRef, -45.f);
     CGContextMoveToPoint(shineMaskContextRef, 0, 0);
-    CGContextFillRect(shineMaskContextRef, CGRectMake(0, 
-                                                      0, 
-                                                      rect.size.width / 8 * 5, 
+    CGContextFillRect(shineMaskContextRef, CGRectMake(0,
+                                                      0,
+                                                      rect.size.width / 8 * 5,
                                                       rect.size.height));
     
     CGImageRef mainMaskImageRef = CGBitmapContextCreateImage(mainMaskContextRef);
@@ -232,13 +243,20 @@
     CGContextClipToMask(contextRef, self.bounds, mainMaskImageRef);
     CGContextClipToMask(contextRef, self.bounds, shineMaskImageRef);
     CGContextSetBlendMode(contextRef, kCGBlendModeLighten);
-    CGContextDrawLinearGradient(contextRef, [self alphaGradient], CGPointMake(0, 0), CGPointMake(0, self.bounds.size.height), 0);
+    
+    
+    if (self.addAlphaGradientMask) {
+        CGContextDrawLinearGradient(contextRef, [self alphaGradient], CGPointMake(0, 0), CGPointMake(0, self.bounds.size.height), 0);
+    }else{
+        CGContextDrawLinearGradient(contextRef, nil, CGPointMake(0, 0), CGPointMake(0, self.bounds.size.height), 0);
+    }
+    
     
     CGImageRelease(mainMaskImageRef);
     CGImageRelease(shineMaskImageRef);
     CGImageRelease(imageRef);
     // Done with image
-
+    
     CGContextRestoreGState(contextRef);
     
     CGContextSetLineWidth(contextRef, self.borderWidth);
@@ -246,9 +264,9 @@
     CGContextMoveToPoint(contextRef, 0, 0);
     CGContextAddEllipseInRect(contextRef, imageRect);
     // Drop shadow
-    CGContextSetShadowWithColor(contextRef, 
-                                self.shadowOffset, 
-                                self.shadowBlur, 
+    CGContextSetShadowWithColor(contextRef,
+                                self.shadowOffset,
+                                self.shadowBlur,
                                 self.shadowColor.CGColor);
     CGContextStrokePath(contextRef);
     CGContextRestoreGState(contextRef);
