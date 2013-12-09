@@ -94,10 +94,10 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 
 #pragma mark - Initialization & Deallocation
 
-- (id)initWithFrame:(CGRect)frame 
+- (id)initWithFrame:(CGRect)frame
         centerPoint:(CGPoint)centerPoint
-         dataSource:(id<QuadCurveDataSourceDelegate>)dataSource 
-    mainMenuFactory:(id<QuadCurveMenuItemFactory>)mainFactory 
+         dataSource:(id<QuadCurveDataSourceDelegate>)dataSource
+    mainMenuFactory:(id<QuadCurveMenuItemFactory>)mainFactory
     menuItemFactory:(id<QuadCurveMenuItemFactory>)menuItemFactory
        menuDirector:(id<QuadCurveMotionDirector>)motionDirector {
     
@@ -133,29 +133,29 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
     return self;
 }
 
-- (id)initWithFrame:(CGRect)frame 
+- (id)initWithFrame:(CGRect)frame
         centerPoint:(CGPoint)centerPoint
-         dataSource:(id<QuadCurveDataSourceDelegate>)dataSource 
-    mainMenuFactory:(id<QuadCurveMenuItemFactory>)mainFactory 
+         dataSource:(id<QuadCurveDataSourceDelegate>)dataSource
+    mainMenuFactory:(id<QuadCurveMenuItemFactory>)mainFactory
     menuItemFactory:(id<QuadCurveMenuItemFactory>)menuItemFactory {
     
     
-    return [self initWithFrame:frame 
-                   centerPoint:centerPoint 
-                    dataSource:dataSource 
-               mainMenuFactory:mainFactory 
-               menuItemFactory:menuItemFactory 
+    return [self initWithFrame:frame
+                   centerPoint:centerPoint
+                    dataSource:dataSource
+               mainMenuFactory:mainFactory
+               menuItemFactory:menuItemFactory
                   menuDirector:[[QuadCurveRadialDirector alloc] init]];
     
 }
 
 - (id)initWithFrame:(CGRect)frame dataSource:(id<QuadCurveDataSourceDelegate>)dataSource {
     
-    return [self initWithFrame:frame 
-                    centerPoint:CGPointMake(frame.size.width / 2, frame.size.height / 2) 
-                    dataSource:dataSource 
+    return [self initWithFrame:frame
+                   centerPoint:CGPointMake(frame.size.width / 2, frame.size.height / 2)
+                    dataSource:dataSource
                mainMenuFactory:[QuadCurveDefaultMenuItemFactory defaultMainMenuItemFactory]
-               menuItemFactory:[QuadCurveDefaultMenuItemFactory defaultMenuItemFactory]];    
+               menuItemFactory:[QuadCurveDefaultMenuItemFactory defaultMenuItemFactory]];
 }
 
 - (id)initWithFrame:(CGRect)frame mainMenuImage:(NSString *)mainMenuItemImage menuItemImageArray:(NSArray *)array {
@@ -170,7 +170,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 - (id)initWithFrame:(CGRect)frame withArray:(NSArray *)array {
     
     return [self initWithFrame:frame
-                    centerPoint:CGPointMake(frame.size.width / 2, frame.size.height / 2) 
+                   centerPoint:CGPointMake(frame.size.width / 2, frame.size.height / 2)
                     dataSource:[[QuadCurveDefaultDataSource alloc] initWithArray:array]
                mainMenuFactory:[QuadCurveDefaultMenuItemFactory defaultMainMenuItemFactory]
                menuItemFactory:[QuadCurveDefaultMenuItemFactory defaultMenuItemFactory]];
@@ -218,7 +218,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 #pragma mark - Data Source Delegate
 
 - (void)setDataSource:(id<QuadCurveDataSourceDelegate>)dataSource {
-    dataSource_ = dataSource;    
+    dataSource_ = dataSource;
 }
 
 - (int)numberOfDisplayableItems {
@@ -226,7 +226,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 }
 
 - (id)dataObjectAtIndex:(int)index {
-    return [[self dataSource] dataObjectAtIndex:index];    
+    return [[self dataSource] dataObjectAtIndex:index];
 }
 
 - (QuadCurveMenuItem *)menuItemAtIndex:(int)index {
@@ -273,6 +273,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 
 - (void)singleTapInMenuView:(UITapGestureRecognizer *)tapGesture {
     [self closeMenu];
+    [mainMenuButton setHighlighted:NO];
 }
 
 #pragma mark - QuadCurveMenuItemEventDelegate Adherence
@@ -284,9 +285,20 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
     
     if (item == mainMenuButton) {
         [self mainMenuItemTapped];
+        
+        //set highlight according to current expanding status
+        if (_expanding) {
+            [mainMenuButton setHighlighted:YES];
+        }else{
+            [mainMenuButton setHighlighted:NO];
+        }
+        
     } else {
         [self menuItemTapped:item];
+        //set highlighted to NO, when menu item is tapped
+        [mainMenuButton setHighlighted:NO];
     }
+    
 }
 
 - (void)mainMenuItemTapped {
@@ -371,20 +383,20 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 
 
 - (void)performCloseMainMenuAnimated:(BOOL)animated {
-
+    
     id<QuadCurveAnimation> animation = self.noAnimation;
     if (animated) { animation = self.mainMenuCloseAnimation; }
     
     [mainMenuButton.layer addAnimation:[animation animationForItem:mainMenuButton]
                                 forKey:animation.animationName];
-
+    
 }
 
 - (void)performExpandMainMenuAnimated:(BOOL)animated {
-
+    
     id<QuadCurveAnimation> animation = self.noAnimation;
     if (animated) { animation = self.mainMenuExpandAnimation; }
-
+    
     [mainMenuButton.layer addAnimation:[animation animationForItem:mainMenuButton]
                                 forKey:animation.animationName];
     
@@ -411,11 +423,11 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 
 - (void)setExpanding:(BOOL)expanding animated:(BOOL)animated {
     _expanding = expanding;
-
+    
     if ([self isExpanding]) {
         [self performExpandMainMenuAnimated:animated];
         [self performExpandMenuAnimated:animated];
-    
+        
     } else {
         [self performCloseMainMenuAnimated:animated];
         [self performCloseMenuAnimated:animated];
@@ -469,7 +481,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
     }];
     
     NSArray *itemToBeAnimated = [self allMenuItemsBeingDisplayed];
-
+    
     id<QuadCurveAnimation> animation = self.noAnimation;
     if (animated) { animation = self.expandItemAnimation; }
     
@@ -525,7 +537,7 @@ static int const kQuadCurveMenuItemStartingTag = 1000;
 - (void)animateItemToStartPoint:(NSDictionary *)itemAndAnimation {
     id<QuadCurveAnimation> animation = [itemAndAnimation objectForKey:@"animation"];
     QuadCurveMenuItem *item = [itemAndAnimation objectForKey:@"menuItem"];
-
+    
     CAAnimationGroup *closeAnimation = [animation animationForItem:item];
     [item.layer addAnimation:closeAnimation forKey:[animation animationName]];
     item.center = item.startPoint;
