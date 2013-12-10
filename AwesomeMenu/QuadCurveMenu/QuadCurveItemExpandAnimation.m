@@ -43,8 +43,8 @@ static float const kQuadCurveDefaultRotation = M_PI * 2;
     rotateAnimation.values = [NSArray arrayWithObjects:[NSNumber numberWithFloat:M_PI],[NSNumber numberWithFloat:0.0f], nil];
     rotateAnimation.duration = self.duration;
     rotateAnimation.keyTimes = [NSArray arrayWithObjects:
-                                [NSNumber numberWithFloat:.3], 
-                                [NSNumber numberWithFloat:.4], nil]; 
+                                [NSNumber numberWithFloat:.3],
+                                [NSNumber numberWithFloat:.4], nil];
     
     CAKeyframeAnimation *positionAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
     positionAnimation.duration = self.duration;
@@ -56,8 +56,18 @@ static float const kQuadCurveDefaultRotation = M_PI * 2;
     positionAnimation.path = path;
     CGPathRelease(path);
     
+    /**
+     *  put all animation together
+     */
     CAAnimationGroup *animationgroup = [CAAnimationGroup animation];
-    animationgroup.animations = [NSArray arrayWithObjects:positionAnimation, rotateAnimation, nil];
+    
+    if (_shouldRotate) {
+        animationgroup.animations = [NSArray arrayWithObjects:positionAnimation, rotateAnimation, nil];
+    }
+    else{
+        animationgroup.animations = [NSArray arrayWithObjects:positionAnimation, nil];
+    }
+    
     animationgroup.duration = self.duration;
     animationgroup.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
 

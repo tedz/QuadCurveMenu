@@ -11,5 +11,5 @@
 @interface QuadCurveItemExpandAnimation : NSObject <QuadCurveAnimation>
 
 @property (nonatomic,assign) CGFloat rotation;
-
+@property (nonatomic) BOOL shouldRotate;
 @end

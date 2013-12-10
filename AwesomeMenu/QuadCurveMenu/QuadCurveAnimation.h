@@ -19,5 +19,6 @@ static float const kQuadCoreDefaultDelayBetweenItemAnimation = 0.036f;
 
 @property (nonatomic,assign) CGFloat duration;
 @property (nonatomic,assign) CGFloat delayBetweenItemAnimation;
+@property (nonatomic) BOOL shouldRotate;
 
 @end
