@@ -11,6 +11,7 @@
 @interface QuadCurveTiltAnimation : NSObject <QuadCurveAnimation>
 
 @property (nonatomic,assign) float tiltDirection;
+@property (nonatomic) BOOL shouldRotate; //to satisfy warning
 
 - (id)initWithTilt:(float)tiltDirection;
 - (id)initWithClockwiseTilt;

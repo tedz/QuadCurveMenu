@@ -11,5 +11,6 @@
 @interface QuadCurveBlowupAnimation : NSObject <QuadCurveAnimation>
 
 @property (nonatomic,assign) CGFloat blowUpScale;
+@property (nonatomic) BOOL shouldRotate; //to satisfy warning
 
 @end

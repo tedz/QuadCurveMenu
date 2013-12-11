@@ -10,4 +10,6 @@
 
 @interface QuadCurveNoAnimation : NSObject <QuadCurveAnimation>
 
+@property (nonatomic) BOOL shouldRotate; //to satisfy warning
+
 @end

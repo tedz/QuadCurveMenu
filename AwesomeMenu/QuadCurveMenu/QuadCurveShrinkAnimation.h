@@ -11,5 +11,6 @@
 @interface QuadCurveShrinkAnimation : NSObject <QuadCurveAnimation>
 
 @property (nonatomic,assign) CGFloat shrinkScale;
+@property (nonatomic) BOOL shouldRotate; //to satisfy warning
 
 @end
